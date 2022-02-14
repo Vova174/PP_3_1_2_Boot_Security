@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface UserDao extends CrudRepository<User,Long> {
     User getById(Long id);
-   // User getByUsername(String username);
-    User getUserByUsername(String username);
+
+    User getUserByName(String username);
 }

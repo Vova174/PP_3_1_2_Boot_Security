@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
@@ -17,13 +15,15 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final RoleService roleService;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, RoleService roleService) {
         this.userDao = userDao;
+        this.roleService = roleService;
     }
 
     @Transactional
-    public User getId(Long id){
+    public User getId(Long id) {
         return userDao.getById(id);
     }
 
@@ -42,15 +42,24 @@ public class UserServiceImpl implements UserService {
         userDao.delete(user);
     }
 
-    @PostConstruct
+    @Transactional
+    public User findUserByName(String name){
+       return userDao.getUserByName(name);
+    }
+
+
+    @Transactional
     public void init() {
-        save(new User("vova", "pupkin", Set.of(new Role("ADMIN"))));
-        save(new User("vova", "pupkin"));
-        save(new User("valera", "puchkin"));
-        save(new User("volodimir", "polyshcyk"));
-        save(new User("vikor", "popov"));
-        save(new User("vasya", "petrenko"));
-        save(new User("vadim", "prutckyi"));
+        Role adminRole = new Role("ROLE_ADMIN");
+        Role userRole = new Role("ROLE_USER");
+        roleService.saveAll(Set.of(adminRole, userRole));
+        save(new User("vova", "pupkin", "vova", "vova@mail.ru", 33, Set.of(adminRole)));
+        save(new User("vova1", "pupkin1", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
+        save(new User("vova2", "pupkin2", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
+        save(new User("vova3", "pupkin3", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
+        save(new User("vova4", "pupkin4", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
+        save(new User("vova5", "pupkin5", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
+        save(new User("vova6", "pupkin6", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
     }
 
 }

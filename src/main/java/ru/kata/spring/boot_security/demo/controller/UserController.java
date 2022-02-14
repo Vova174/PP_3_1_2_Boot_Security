@@ -2,57 +2,36 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import ru.kata.spring.boot_security.demo.service.UserDetailService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
-import java.util.List;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("user")
 public class UserController {
+    private final UserDetailService userDetailService;
+    private final UserServiceImpl userService;
 
-    private final UserServiceImpl userServiceImpl;
+    public UserController(UserDetailService userDetailService, UserServiceImpl userService) {
+        this.userDetailService = userDetailService;
 
-    public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+        this.userService = userService;
     }
 
     @GetMapping
-    public String show(Model model) {
-        List<User> users = userServiceImpl.findAll();
-        model.addAttribute("users", users);
+    public String showUser(Model model, Principal principal){
+        model.addAttribute("user",userService.findUserByName(principal.getName()));
+        return "user";
+    }
+    @GetMapping("/{id}")
+    public String show(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("user", userService.getId(id));
         return "user";
     }
 
-    @GetMapping("/new")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        return "new";
-    }
 
-    @PostMapping
-    public String create(@ModelAttribute("User") User user) {
-        userServiceImpl.save(user);
-        return "redirect:/user";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userServiceImpl.getId(id));
-        return "edit";
-    }
-
-    @PostMapping("/{id}")
-    public String update(@ModelAttribute("user") User user) {
-        userServiceImpl.save(user);
-        return "redirect:/user";
-    }
-
-    @PostMapping("delete/{id}")
-    public String delete(@ModelAttribute("user") User user) {
-        userServiceImpl.delete(user);
-        return "redirect:/user";
-    }
 }
-
