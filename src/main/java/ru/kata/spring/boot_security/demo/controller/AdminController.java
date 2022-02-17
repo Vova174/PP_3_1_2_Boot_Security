@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +8,8 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
+import javax.persistence.GeneratedValue;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,12 +26,15 @@ public class AdminController {
         this.roleServiceImpl = roleServiceImpl;
     }
 
+
     @GetMapping
-    public String show(Model model) {
+    public String show(Model model, Principal principal) {
         List<User> users = userServiceImpl.findAll();
         model.addAttribute("users", users);
+        model.addAttribute("user", userServiceImpl.findUserByName(principal.getName()));
         return "admin";
     }
+
 
     @GetMapping("/new")
     public String newUser(Model model) {
@@ -40,51 +44,32 @@ public class AdminController {
 
     @PostMapping
     public String create(@ModelAttribute("User") User user,
-                         @RequestParam(required=false) String roleAdmin,@RequestParam(required=false) String roleUser) {
+                         @RequestParam String role) {
         Set<Role> roles = new HashSet<>();
-
-        if (roleAdmin != null && roleAdmin.equals("ROLE_ADMIN")) {
-            roles.add(roleServiceImpl.getRoleByName("ROLE_ADMIN"));
-        }
-        if(roleUser != null && roleUser.equals("ROLE_USER")) {
-            roles.add(roleServiceImpl.getRoleByName("ROLE_USER"));
-        }
-        user.setRoles(roles);
-        userServiceImpl.save(user);
+            roles.add(roleServiceImpl.getRoleByName(role));
+            user.setRoles(roles);
+            userServiceImpl.save(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") long id) {
         model.addAttribute("user", userServiceImpl.getId(id));
-        return "edit";
+        return "admin";
     }
 
     @GetMapping("/init")
-    public String init(){
+    public String init() {
         userServiceImpl.init();
         return "index";
     }
 
-
-    @PostMapping("/{id}")
-    public String update(@ModelAttribute("User") User user , @RequestParam(required=false) String roleAdmin,@RequestParam(required=false) String roleUser) {
-        Set<Role> roles = new HashSet<>();
-        if (roleAdmin != null && roleAdmin.equals("ROLE_ADMIN")) {
-            roles.add(roleServiceImpl.getRoleByName("ROLE_ADMIN"));
+        @PostMapping("delete")
+        public String delete (@RequestParam Long id){
+            User user = userServiceImpl.findUserById(id);
+            userServiceImpl.delete(user);
+            return "redirect:/admin";
         }
-        if(roleUser != null && roleUser.equals("ROLE_USER")) {
-            roles.add(roleServiceImpl.getRoleByName("ROLE_USER"));
-        }
-        user.setRoles(roles);
-        userServiceImpl.save(user);
-        return "redirect:/admin";
     }
 
-    @PostMapping("delete/{id}")
-    public String delete(@ModelAttribute("user") User user) {
-        userServiceImpl.delete(user);
-        return "redirect:/admin";
-    }
-}
 

@@ -43,8 +43,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public User findUserByName(String name){
-       return userDao.getUserByName(name);
+    public User findUserByName(String name) {
+        return userDao.getUserByName(name);
     }
 
 
@@ -62,4 +62,8 @@ public class UserServiceImpl implements UserService {
         save(new User("vova6", "pupkin6", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
     }
 
+    public User findUserById(Long id) {
+        return userDao.getById(id);
+
+    }
 }
