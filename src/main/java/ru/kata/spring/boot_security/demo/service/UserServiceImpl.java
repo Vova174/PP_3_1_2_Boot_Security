@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public List<User> findAll() {
-        return (List<User>) userDao.findAll();
+        return  userDao.findAll();
     }
 
     @Transactional
@@ -62,6 +62,12 @@ public class UserServiceImpl implements UserService {
         save(new User("vova6", "pupkin6", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
     }
 
+    @Transactional
+    @Override
+    public void deleteUserById(Long id) {
+        userDao.deleteById(id);
+    }
+    @Transactional
     public User findUserById(Long id) {
         return userDao.getById(id);
 
