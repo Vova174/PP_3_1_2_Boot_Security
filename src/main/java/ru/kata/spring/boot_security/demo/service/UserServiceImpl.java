@@ -47,21 +47,6 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserByName(name);
     }
 
-
-    @Transactional
-    public void init() {
-        Role adminRole = new Role("ROLE_ADMIN");
-        Role userRole = new Role("ROLE_USER");
-        roleService.saveAll(Set.of(adminRole, userRole));
-        save(new User("vova", "pupkin", "vova", "vova@mail.ru", 33, Set.of(adminRole)));
-        save(new User("vova1", "pupkin1", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-        save(new User("vova2", "pupkin2", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-        save(new User("vova3", "pupkin3", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-        save(new User("vova4", "pupkin4", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-        save(new User("vova5", "pupkin5", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-        save(new User("vova6", "pupkin6", "vova", "vova1@mail.ru", 33, Set.of(userRole)));
-    }
-
     @Transactional
     @Override
     public void deleteUserById(Long id) {

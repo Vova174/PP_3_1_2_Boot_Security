@@ -5,10 +5,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.InitClass;
 import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
-import javax.persistence.GeneratedValue;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
@@ -20,10 +20,12 @@ public class AdminController {
 
     private final UserServiceImpl userServiceImpl;
     private final RoleServiceImpl roleServiceImpl;
+    private final InitClass initClass;
 
-    public AdminController(UserServiceImpl userServiceImpl, RoleServiceImpl roleServiceImpl) {
+    public AdminController(UserServiceImpl userServiceImpl, RoleServiceImpl roleServiceImpl, InitClass initClass) {
         this.userServiceImpl = userServiceImpl;
         this.roleServiceImpl = roleServiceImpl;
+        this.initClass = initClass;
     }
 
 
@@ -60,7 +62,7 @@ public class AdminController {
 
     @GetMapping("/init")
     public String init() {
-        userServiceImpl.init();
+        initClass.init();
         return "index";
     }
 
